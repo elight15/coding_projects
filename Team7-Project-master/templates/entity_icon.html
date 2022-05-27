@@ -1,0 +1,6 @@
+{% set icon = 'images_and_sensors/' + item.type + ('active' if item.state else 'inactive') + '.png' %}
+{% if item.is_sensor %}
+<img class="{{ item.class }}" width="30" height="30" style="position: absolute; top: {{ item.pos_top }}px; left: {{item.pos_left}}px" src="{{ url_for('static', filename=icon) }}" id="{{ item.id }}_icon" >
+{% else %}
+<img class="{{ item.class }}" width="30" height="30" style="position: absolute; top: {{ item.pos_top }}px; left: {{item.pos_left}}px; cursor:pointer;" src="{{ url_for('static', filename=icon) }}" id="{{ item.id }}_icon" onclick="item_click(this.id);">
+{% endif %}

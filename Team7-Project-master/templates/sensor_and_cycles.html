@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="sbox card popup" style="z-index: 4; visibility: hidden;">
+    <div class="logs">
+        <table class="log-table">
+            <thead>
+                <tr>
+                    <th class="data-table-0lax">Time</th>
+                    <th class="data-table-0lax">IP</th>
+                    <th class="data-table-0lax">UserAgent</th>
+                    <th class="data-table-0lax">Action</th>
+                    <th class="data-table-0lax">Data</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for entry in logs %}
+                <tr>
+                    <td class="data-table-0lax">{{ entry.time }}</td>
+                    <td class="data-table-0lax">{{ entry.ip }}</td>
+                    <td class="data-table-0lax">{{ entry.useragent }}</td>
+                    <td class="data-table-0lax">{{ entry.action }}</td>
+                    <td class="data-table-0lax">{{ entry.data }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <span style="position: absolute; top: 15px; left: 1150px; font-size: 50px; color: #C20000; cursor: pointer;" onclick="hide_popup();">&#10006;</span>
+</div>
+
+<div class="sbox card">
+    <div class="sensory">
+        <label class="areas">
+            <p>Sensors</p>
+        </label>
+        <div class="sensorcontrol">
+            {% for sensor in sensors %}
+                {% include "sensor_toggle.html" %}
+            {% endfor %}
+        </div>
+    </div>
+    <div class="cycles">
+        <label class="areac">
+            <p>Cycles</p>
+        </label>
+        <form class="timer" action="/action_page.php">
+            <label class="runtime" style="font-size:25px;">Run time:</label>
+            <span>
+                <input type="number" id="timer_h" name="timer" style="width:50px;height:35px;font-size:16pt;border-radius:10px;" value="00" onkeyup="input_fixup(this.id);" onchange="input_fixup(this.id);">
+                <span style="color: white; font-weight: bolder;">:</span>
+                <input type="number" id="timer_m" name="timer" style="width:50px;height:35px;font-size:16pt;border-radius:10px;" value="00" onkeyup="input_fixup(this.id);" onchange="input_fixup(this.id);">
+                <span style="color: white; font-weight: bolder;">:</span>
+                <input type="number" id="timer_s" name="timer" style="width:50px;height:35px;font-size:16pt;border-radius:10px;" value="00" onkeyup="input_fixup(this.id);" onchange="input_fixup(this.id);">
+            </span>
+            <label class="timeinput" style="font-size:18pt;">(hh:mm:ss)</label>
+        </form>
+        <div class="cycleconfirm">
+            {% for cycle in cycles %}
+            <div class="runcycle">
+                <label class="names">
+                    <p>{{ cycle.name }}</p>
+                </label>
+                <button class="runit" type="submit" form="timer" id="{{ cycle.id }}" onclick="run_cycle(this.id);">RUN</button>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <button class="runit" style="position: absolute; top: 648px; left: 110px; width: 1000px; height: 20px; font-size: 18px;" onclick="show_popup()">Open Logs</button>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+function sensor_switched(item_id) {
+    let sw = document.getElementById(item_id);
+    let xhr = new XMLHttpRequest();
+    xhr.open('POST', '{{ url_for("update") }}', true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    if (sw.checked) {
+        xhr.send(JSON.stringify({id: item_id, state: true}));
+    } else {
+        xhr.send(JSON.stringify({id: item_id, state: false}));
+    }
+}
+
+    function run_cycle(cycle_id) {
+        timer_h = document.getElementById("timer_h").value;
+        timer_m = document.getElementById("timer_m").value;
+        timer_s = document.getElementById("timer_s").value;
+
+        if (timer_h == "" || timer_m == "" || timer_s == "" || isNaN(timer_h) || isNaN(timer_m) || isNaN(timer_s)) {
+            alert("Please enter a valid time.");
+            return;
+        }
+
+        let xhr = new XMLHttpRequest();
+        xhr.open('POST', '{{ url_for("run_cycle") }}', true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.send(JSON.stringify({time_h: timer_h, time_m: timer_m, time_s: timer_s, id: cycle_id}));
+        let btn = document.getElementById(cycle_id);
+        btn.innerHTML = "&#10004;";
+        btn.disabled = true;
+        btn.style.backgroundColor = "#67b567";
+        btn.style.cursor = "default";
+
+        setTimeout(() => {
+            btn.innerHTML = "RUN";
+            btn.disabled = false;
+            btn.style.backgroundColor = null;
+            btn.style.cursor = null;
+        }, 2000);
+    }
+
+    function input_fixup(id) {
+        let input = document.getElementById(id);
+        if (input.value == "" || isNaN(input.value) || input.value < 0) {
+            input.value = "00";
+        } else if (input.value.length == 1) {
+            input.value = "0" + input.value;
+        } else if (input.value.length == 3 && input.value[0] == "0") {
+            input.value = input.value.slice(1);
+        }
+    }
+
+    function show_popup() {
+        let elements = document.getElementsByClassName("popup");
+        for (let i = 0; i < elements.length; i++) {
+            elements[i].style.visibility = "visible";
+        }
+    }
+
+    function hide_popup() {
+        let elements = document.getElementsByClassName("popup");
+        for (let i = 0; i < elements.length; i++) {
+            elements[i].style.visibility = "hidden";
+        }
+    }
+</script>
+{% endblock %}

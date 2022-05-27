@@ -1,0 +1,13 @@
+<div class="tog" id="{{ sensor.id }}_tog">
+    <label class="name">
+        <p>{{ sensor.name }}</p>
+    </label>
+    <label class="switch">
+        {% if sensor.state == True %}
+        <input type="checkbox" checked id="{{ sensor.id }}" onclick="sensor_switched(this.id);">
+        {% else %}
+        <input type="checkbox" id="{{ sensor.id }}" onclick="sensor_switched(this.id);">
+        {% endif %}
+        <span class="slider round"></span>
+    </label><br><br>
+</div>

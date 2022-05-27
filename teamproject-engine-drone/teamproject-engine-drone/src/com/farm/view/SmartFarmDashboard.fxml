@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.control.TreeView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane fx:id="RootAnchorPane" maxHeight="800.0" maxWidth="1000.0" minHeight="800.0" minWidth="1000.0" prefHeight="800.0" prefWidth="1000.0" style="-fx-background-color: rgb(255, 255, 255);;" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.farm.view.SmartFarmDashboardController">
+   <children>
+      <SplitPane fx:id="ControlsSplitPane" dividerPositions="0.6" layoutY="-4.0" orientation="VERTICAL" prefHeight="800.0" prefWidth="400.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="600.0" AnchorPane.topAnchor="0.0">
+        <items>
+
+           <!-- FARM ITEMS -->
+          <AnchorPane fx:id="ItemsAnchorPane" minHeight="0.0" minWidth="0.0" prefHeight="400.0" prefWidth="400 ">
+               <children>
+                  <Label fx:id="ItemsLabel" layoutX="10" layoutY="10" text="Farm Items" />
+                  <TreeView fx:id="ItemsTreeView" layoutX="10.0" layoutY="30.0" prefHeight="320.0" prefWidth="160.0" />
+                  <Button fx:id="AddDrone" alignment="CENTER_LEFT" layoutX="10.0" layoutY="360.0" mnemonicParsing="false" onAction="#addDrone" prefHeight="16.0" prefWidth="160.0" text="+ Add Drone">
+				  </Button>
+                  <Button fx:id="NewFarmItemBtn" alignment="CENTER_LEFT" layoutX="10.0" layoutY="390.0" mnemonicParsing="false" onAction="#addNewFarmItemLeaf" prefHeight="16" prefWidth="160" text="+ Add Item">
+                  </Button>
+                  <Button fx:id="NewFarmItemContainerBtn" alignment="CENTER_LEFT" layoutX="10.0" layoutY="420.0" mnemonicParsing="false" onAction="#addNewFarmItemContainer" prefHeight="16" prefWidth="160" text="+ Add Item Container">
+                  </Button>
+				  <Button fx:id="RemoveFarmItem" alignment="CENTER_LEFT" layoutX="10.0" layoutY="450.0" mnemonicParsing="false" onAction="#deleteFarmItem" prefHeight="16.0" prefWidth="160.0" text="- Delete Selected">
+				  </Button>		  
+                  <GridPane fx:id="SelectedItemProperties" hgap="4" layoutX="180.0" layoutY="30.0" vgap="8">
+                     <Label GridPane.columnIndex="0" GridPane.rowIndex="0">Name:</Label>
+                     <TextField fx:id="SelectedName" prefWidth="32" GridPane.ColumnSpan="3" GridPane.columnIndex="1" />
+
+                     <Label GridPane.columnIndex="0" GridPane.rowIndex="1">Position (X, Y):</Label>
+                     <TextField fx:id="SelectedPosX" prefWidth="36" promptText="0" GridPane.columnIndex="1" GridPane.rowIndex="1">4</TextField>
+                     <TextField fx:id="SelectedPosY" prefWidth="36" GridPane.columnIndex="2" GridPane.rowIndex="1">8</TextField>
+
+                     <Label GridPane.columnIndex="0" GridPane.rowIndex="2">Size (L, W, H):</Label>
+                     <TextField fx:id="SelectedLength" prefWidth="36" promptText="0" GridPane.columnIndex="1" GridPane.rowIndex="2">4</TextField>
+                     <TextField fx:id="SelectedWidth" prefWidth="36" GridPane.columnIndex="2" GridPane.rowIndex="2">8</TextField>
+                     <TextField fx:id="SelectedHeight" prefWidth="36" GridPane.columnIndex="3" GridPane.rowIndex="2">8</TextField>
+
+                     <Label GridPane.rowIndex="3">Price:</Label>
+                     <TextField fx:id="SelectedPrice" prefHeight="30.0" prefWidth="53.0" promptText="0" GridPane.ColumnSpan="3" GridPane.columnIndex="1" GridPane.rowIndex="3">49</TextField>
+
+                     <Button fx:id="SaveChangesBtn" onAction="#saveSelectedItemChanges" text="Save" GridPane.ColumnSpan="3" GridPane.columnIndex="1" GridPane.rowIndex="5">
+                     </Button>
+                     <Label text="Market:" GridPane.rowIndex="4" />
+                     <TextField fx:id="SelectedMarket" prefHeight="30.0" prefWidth="0.0" promptText="0" GridPane.columnIndex="1" GridPane.columnSpan="2147483647" GridPane.rowIndex="4" />
+                     <columnConstraints>
+                        <ColumnConstraints />
+                        <ColumnConstraints />
+                        <ColumnConstraints />
+                        <ColumnConstraints />
+                     </columnConstraints>
+                     <rowConstraints>
+                        <RowConstraints />
+                        <RowConstraints />
+                        <RowConstraints />
+                        <RowConstraints />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" />
+                        <RowConstraints />
+                     </rowConstraints>
+                  </GridPane>
+
+                
+               </children>
+            </AnchorPane>
+
+           <!-- DRONE ACTIONS -->
+          <AnchorPane fx:id="ActionsAnchorPane" minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+               <children>
+                  <Label fx:id="DroneActionsLabel" layoutX="130.0" layoutY="17.0" text="Drone Commands">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </Label>
+                  <Button fx:id="LaunchSimulator" layoutX="17.0" layoutY="173.0" mnemonicParsing="false" onAction="#checkMissionforSimulator" prefHeight="38.0" prefWidth="169.0" text="Launch Simulator">
+                     <font>
+                        <Font size="16.0" />
+                     </font>
+                  </Button>
+                  <RadioButton fx:id="visitButton" layoutX="42.0" layoutY="50.0" mnemonicParsing="false" prefHeight="18.0" prefWidth="290.0" text="Visit Item/Item Container">
+                     <toggleGroup>
+                        <ToggleGroup fx:id="action" />
+                     </toggleGroup></RadioButton>
+                  <Button fx:id="LaunchDrone" layoutX="229.0" layoutY="173.0" mnemonicParsing="false" onAction="#checkMissionforPhysicalDrone" prefHeight="38.0" prefWidth="154.0" text="Launch Drone">
+                     <font>
+                        <Font size="16.0" />
+                     </font>
+                  </Button>
+                  <RadioButton fx:id="scanButton" layoutX="42.0" layoutY="81.0" mnemonicParsing="false" prefHeight="18.0" prefWidth="262.0" text="Scan Farm" toggleGroup="$action" />
+               </children>
+            </AnchorPane>
+        </items>
+      </SplitPane>
+      <AnchorPane fx:id="FarmViewVBox" layoutX="400.0" prefHeight="800.0" prefWidth="600.0">
+      	<children>
+            <ImageView fx:id="drone" fitHeight="100.0" fitWidth="100.0" preserveRatio="true" visible="false">
+               <image>
+                  <Image url="@../../../drone.png" />
+               </image>
+            </ImageView>
+         </children>
+      </AnchorPane>
+   </children>
+</AnchorPane>

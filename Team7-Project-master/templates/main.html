@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="dcontainer">
+    <img class="floorplan" width="750" height="850" src="{{ url_for('static', filename='images_and_sensors/floorplan.png') }}">
+    
+    {% for item in entities %}
+        {% include "entity_icon.html" %}
+    {% endfor %}
+
+    <div class="infosection">
+        <div class="greeting">{{ greeting }}</div>
+        <div class="outdoortemp">{{ out_temp }}&deg;F</div>
+        {% if weather == 'sun' %}
+            <img class= "weather" src="{{ url_for('static', filename='images_and_sensors/sun.png') }}" width="140" height="140">
+        {% elif weather == 'cloudy' %}
+            <img class= "weather" src="{{ url_for('static', filename='images_and_sensors/cloudy.png') }}" width="140" height="140">
+        {% elif weather == 'rain' %}
+            <img class= "weather" src="{{ url_for('static', filename='images_and_sensors/rain.png') }}" width="140" height="140">
+        {% elif weather == 'snow' %}
+            <img class= "weather" src="{{ url_for('static', filename='images_and_sensors/snow.png') }}" width="140" height="140">
+        {% endif %}
+
+        <div class="quotes" id="en">{{ quote_en }} - {{ quote_author }}</div>
+        <div class="quotes" id="es" style="display: none;">{{ quote_es }} - {{ quote_author }}</div>
+
+        <select class="lang" onchange="set_lang(this.selectedOptions[0].value)">
+            <option value="en">English</option>
+            <option value="es">Español</option>
+        </select>
+        <div class="ignorethisline"></div>
+
+        <div class="indoortemp" id="indoortemp"><span style="font-weight: bolder;">Indoor</span><br>{{  "%.1f" | format(in_temp)  }}&deg;F</div>
+
+        <button class="lower" type="button" onclick="adj_temp('down');"></button> 
+        <button class="raise" type="button" onclick="adj_temp('up');"></button> 
+        <img class= "plus" src="{{ url_for('static', filename='images_and_sensors/plus.png') }}" width="30" height="30">
+        <img class= "minus" src="{{ url_for('static', filename='images_and_sensors/minus.png') }}" width="30" height="30">
+        <div class="adjtemp" id="adjtemp">{{ set_temp }}&deg;F</div>
+        
+        <button class="powercontrol {% if mode == 'off' %} active {% endif %}" type="button" onclick="set_mode('off'); clear_active(); this.classList.add('active')">OFF</button> 
+        <button class="warmer {% if mode == 'heat' %} active {% endif %}" type="button" onclick="set_mode('heat'); clear_active(); this.classList.add('active');">HEAT</button> 
+        <button class="cooler {% if mode == 'cool' %} active {% endif %}" type="button" onclick="set_mode('cool'); clear_active(); this.classList.add('active');">COOL</button> 
+        
+        <img class= "off" src="{{ url_for('static', filename='images_and_sensors/power.png') }}" width="36" height="36">
+        <img class= "warm" src="{{ url_for('static', filename='images_and_sensors/fire.png') }}" width="33" height="40">
+        <img class= "cool" src="{{ url_for('static', filename='images_and_sensors/snowflake.png') }}" width="40" height="40">
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+    function item_click(item_id) {
+        item_id = item_id.replace("_icon", "");
+        let img = document.getElementById(item_id + "_icon").src;
+        let xhr = new XMLHttpRequest();
+        xhr.open('POST', '{{ url_for("update") }}', true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        if (img.includes('inactive')) {
+            xhr.send(JSON.stringify({id: item_id, state: true}));
+        } else {
+            xhr.send(JSON.stringify({id: item_id, state: false}));
+        }
+    }
+    function adj_temp(dir) {
+        let xhr = new XMLHttpRequest();
+        xhr.open('POST', '{{ url_for("update_hvac") }}', true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.send(JSON.stringify({temp_dir: dir}));
+    }
+    function set_mode(mode) {
+        let xhr = new XMLHttpRequest();
+        xhr.open('POST', '{{ url_for("update_hvac") }}', true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.send(JSON.stringify({mode: mode}));
+    }
+    function set_lang(lang) {
+        if (lang == "en") {
+            document.getElementById("en").style.display = "initial";
+            document.getElementById("es").style.display = "none";
+        } else {
+            document.getElementById("en").style.display = "none";
+            document.getElementById("es").style.display = "initial";
+        }
+    }
+    function clear_active() {
+        let active = document.getElementsByClassName("active");
+        for (let i = 0; i < active.length; i++) {
+            active[i].classList.remove("active");
+        }
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="dcontainer">
+    <div class="data1">
+        <div class="box"></div>
+        <center>
+            <img height="450" id="graph" onload="load_graph(this);" src="{{ url_for('static', filename='monthGraph.png') }}" alt="">
+        </center>
+        <select class="month" name="months" onchange="change_month(this.value);">
+            {% for i in historic %}
+            {% if loop.index == historic|length %}
+            <option value="{{ i.date }}" selected>{{ i.date }}</option>
+            {% else %}
+            <option value="{{ i.date }}">{{ i.date }}</option>
+            {% endif %}
+            {% endfor %}
+        </select> 
+    </div>
+    <div class="data2">
+        <center>
+            <img width="1300" src="{{ url_for('static', filename='historicGraph.png') }}" alt="">
+        </center>
+    </div>
+    <div class="data2">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th class="data-table-tleft"></th>
+                    {% for i in historic %}
+                        <th class="data-table-0lax">{{ i.date }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th class="data-table-tleft">Water Usage</th>
+                    {% for i in historic %}
+                        <td class="data-table-0lax">{{ i.water }}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <th class="data-table-tleft">Power Usage</th>
+                    {% for i in historic %}
+                        <td class="data-table-0lax">{{ i.power }}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <th class="data-table-tleft">Cost</th>
+                    {% for i in historic %}
+                        <td class="data-table-0lax">{{ i.cost }}</td>
+                    {% endfor %}
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script>
+    function load_graph(img) {
+        img.src = "{{ url_for('static', filename='monthGraph.png') }}#" + new Date().getTime();
+        img.onload = null;
+    }
+
+    function change_month(month) {
+        let xhr = new XMLHttpRequest();
+        xhr.open('POST', '{{ url_for("change_graph_month") }}', true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.send(JSON.stringify({month: month}));
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Smart Home</title>
+    <link href="{{ url_for('static', filename='reset.css') }}" rel="stylesheet" type="text/css">
+    <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet" type="text/css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {{ turbo() }}
+</head>
+
+<body>
+    <div class="dim popup" style="visibility: hidden;"></div>
+    <header>
+        <div id="mySidenav" class="sidenav">
+            <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+            <a href="{{ url_for('index') }}">Main</a>
+            <a href="{{ url_for('usage') }}">Usage & Data</a>
+            <a href="{{ url_for('debug') }}">Sensors & Cycles</a>
+        </div>
+        <span class= "navsymbol" style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776; Menu</span>
+    </header>
+
+    <main>
+        <noformat>
+                <tr>
+                    <td>
+                        {% block content %}
+                        {% endblock %}
+                    </td>
+                </tr>
+        </noformat>
+    </main>
+
+    <footer>
+        
+    </footer>
+    {% block script %}
+    {% endblock %}
+    <script>
+        function openNav() {
+            document.getElementById("mySidenav").style.width = "250px";
+        }
+
+        function closeNav() {
+            document.getElementById("mySidenav").style.width = "0";
+        }
+    </script>
+</body>
+
+</html>

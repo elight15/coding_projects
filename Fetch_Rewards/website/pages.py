@@ -8,10 +8,6 @@ values, entire_data = [], [],
 keys = ["payer", "points", "timestamp"]
 spending = 0
 
-'''@pages.route('/', methods=['GET', 'POST'])
-def home():
-    return render_template("main.html")'''
-
 @pages.route('/', methods=['GET', 'POST'])
 def main():
     if request.method == 'POST': 
@@ -37,7 +33,7 @@ def main():
 def add_transaction():
     return render_template("added_transactions.html", data=entire_data)
 
-new_data = entire_data
+
 
 @pages.route('/spend', methods=['GET', 'POST'])
 def spend_points():
@@ -47,7 +43,7 @@ def spend_points():
         if spending == '':
             flash('Points can not be empty', 'error')
         else:
-            hold.append(subpoints(new_data, spending))
+            hold.append(subpoints(entire_data, spending))
     return render_template("spend.html", data=hold)
 
 
@@ -84,17 +80,18 @@ def balance(listed):
 
 def subpoints(listing, point):
     spend = point
-    less, w = 0, 0
-    t, final = [], []
+    less, w, empty = 0, 0, 0
+    py, pt, ts, t, final = [], [], [], [], []
+    new_zip = {}
     recordsort = sorted(listing, key=lambda d: d["timestamp"]) 
     availpoints = sumoflist(recordsort)
     if availpoints < spend:
-        t = balance(recordsort)
         flash('Note that system will process a zero if input greater than available points.', 'success')
-         
+        
+        return empty
     elif spend < 0:
         flash('Note that system will process a zero if input less than 0.', 'success')
-    
+        return empty
     else:
         for z in range(len(recordsort)):
             f = recordsort[z]
@@ -102,13 +99,22 @@ def subpoints(listing, point):
             if w > spend:
                 less = spend * -1
                 w = w - spend
-                f["points"] = less
-                t.append(f)    
+                f["points"] = w
+                py.append(f.get("payer"))
+                pt.append(less)
+                ts.append(f.get("timestamp"))
             else:
                 less = w * -1
                 spend = spend - w
-                f["points"] = less
-                t.append(f)
-                
-        final = balance(t)
+                f["points"] = 0
+                py.append(f.get("payer"))
+                pt.append(less)
+                ts.append(f.get("timestamp"))
+        for x in range(len(py)):
+            new_zip["payer"] = py[x]
+            new_zip["points"] = pt[x]
+            new_zip["timestamp"] = ts[x]
+            y = new_zip.copy()
+            t.append(y)
+    final = balance(t)
     return  final
